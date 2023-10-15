@@ -1,0 +1,31 @@
+/* The integration's default injected base.css file */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+div[data-rehype-pretty-code-title] {
+  @apply rounded-md bg-gray-200 px-2 py-1 font-mono text-xs text-gray-500;
+}
+
+code[data-line-numbers] {
+  counter-reset: line;
+}
+code[data-line-numbers] > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+
+  width: 1rem;
+  margin-right: 0.8rem;
+  @apply text-gray-300;
+}
+code[data-line-numbers-max-digits="2"] > [data-line]::before {
+  width: 2rem;
+}
+code[data-line-numbers-max-digits="3"] > [data-line]::before {
+  width: 3rem;
+}
+
+/* Blog post - Semantic versioning */
+img[alt="npm packages"] {
+  width: 700px;
+}

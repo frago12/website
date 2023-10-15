@@ -1,0 +1,11 @@
+<div class="container">
+  <div><slot name="left" /></div>
+  <div><slot name="right" /></div>
+</div>
+
+<style>
+  .container {
+    display: grid;
+    grid-template-columns: 45% 55%;
+  }
+</style>

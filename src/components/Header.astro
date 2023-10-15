@@ -1,0 +1,36 @@
+---
+import HeaderLink from "./HeaderLink.astro";
+---
+
+<header>
+  <nav>
+    <div class="flex items-center justify-between">
+      <a href="/" class="group flex items-center text-xl">
+        <h1 class="sr-only">Francisco González</h1>
+        <span
+          class="relative mr-[1px] flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-full border-2 border-primary"
+        >
+          <div
+            class="absolute left-0 right-0 z-[-1] h-full bg-primary duration-300 group-hover:left-[32px]"
+          >
+          </div>
+          <span>F</span>
+        </span>
+        <span
+          class="relative left-[-6px] mr-[1px] flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-full border-2 border-primary"
+        >
+          <div
+            class="absolute left-0 right-[32px] z-[-1] h-full bg-primary duration-300 group-hover:right-0"
+          >
+          </div>
+          <span>G</span>
+        </span>
+      </a>
+      <div class="flex gap-6">
+        <HeaderLink href="/">Blog</HeaderLink>
+        <HeaderLink href="/about">About me</HeaderLink>
+      </div>
+    </div>
+    <p class="mt-1 text-gray-400">Developer / Remote Worker</p>
+  </nav>
+</header>

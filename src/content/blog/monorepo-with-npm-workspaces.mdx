@@ -1,0 +1,215 @@
+---
+title: Create a monorepo with npm workspaces
+pubDate: 2022-05-15
+description:
+  npm 7 introduced the concept of workspaces to facilitate the management of
+  monorepos. Here we will explore how to create one, manage local and external
+  dependencies, and more.
+---
+
+import Highlight from "../../components/Highlight.astro";
+
+npm 7 introduced the concept of workspaces to facilitate the management of
+monorepos. Here we will explore how to create one, manage local and external
+dependencies, and more.
+
+There are two things to keep in mind when working with npm workspaces:
+
+1. There’s only one `node_modules` folder located at the root of the repo.
+1. The installation of npm packages should be done at the root of the repo and
+   using the `--workspace` (or `-w`) argument when needed (we will see more
+   about it down below).
+
+Here’s the folder structure of the monorepo we are going to work with in this
+blog post:
+
+```text title="Folder structure"
+- package.json
+- packages/
+	- utils/
+		- package.json
+	- app1/
+		- package.json
+	- app2/
+		- package.json
+```
+
+## Create the main package.json
+
+First of all, let’s create a folder for the monorepo and create the main
+package.json
+
+```bash title="Terminal"
+mkdir monorepo
+cd monorepo
+npm init
+```
+
+## Create a workspace
+
+Then, let’s create our first workspace, `utils`, which will be shared in both
+apps. The `--workspace` (or `-w`) argument specifies the path to the workspace.
+
+```bash title="Terminal"
+npm init -w packages/utils
+```
+
+<Highlight>
+  You can create a scoped package inside a workspace too using the `--scope`
+  argument:
+
+`npm init -w packages/utils --scope frago12`
+
+</Highlight>
+
+The command above does a few things:
+
+- Creates the specified folder(s) `./packages/utils` and the `package.json` for
+  that workspace.
+
+```text title="Terminal"
+- pacakge.json
+- packages/
+	- utils/
+		- package.json
+```
+
+- Adds a reference to the `utils` workspace in the main `package.json`.
+
+```json showLineNumbers title="monorepo/package.json"
+{
+  "name": "monorepo",
+  "workspaces": [
+    "packages/utils"
+  ],
+	...
+}
+```
+
+- Generates a symlink of the new package (workspace) into the `node_modules`
+  folder at the root of the monorepo (we can verify this by running `npm ls`).
+
+<Highlight>
+  You can also symlink the local packages (workspaces) to the `node_modules`
+  folder by executing `npm install` in the root of the monorepo.
+</Highlight>
+
+## Install external dependencies
+
+Once we have a workspace created, we can install core dependencies (available
+for all workspaces) or worskpace-specific dependencies (available only for a
+specific workspace).
+
+<Highlight>
+  As mentioned above, all the dependencies **must** be installed from the root
+  folder.
+</Highlight>
+
+### Core dependencies
+
+Just `npm install` them from the root folder. It will add the dependency to the
+main `package.json` file located at the root of the monorepo.
+
+```bash title="Terminal"
+npm install -D prettier
+```
+
+```json showLineNumbers title="monorepo/package.json"
+{
+  "name": "monorepo",
+	"devDependendencies": {
+		"prettier": "...",
+	},
+  ...
+}
+```
+
+### Worskpace-specific dependencies
+
+Same as the core dependencies, but you need to specify the workspace (`-w`)
+where you want to install the dependency.
+
+```bash title="Terminal"
+npm install date-fns -w @frago12/utils
+```
+
+This will add the `date-fns` dependency to the `utils/package.json` file.
+
+```json showLineNumbers title="monorepo/packages/utils/package.json"
+{
+  "name": "@frago12/utils",
+  "dependencies": {
+    "date-fns": "..."
+  }
+}
+```
+
+## Reference a local package
+
+Let’s say at this point we have created a couple more workspaces,
+`@frago12/app1` and `@frago12/app2`. And, we want to install the package we
+previously created, `@frago12/utils` , in one of them.
+
+A local package can be installed in the same way external packages are.
+
+```bash title="Terminal"
+npm install @frago12/utils -w @frago12/app1
+```
+
+The command above will add the dependency in the package.json file of the
+specified workspace.
+
+```json showLineNumbers  title="monorepo/packages/app1/package.json"
+{
+  "name": "@frago12/app1",
+  "despendencies": {
+    "@frago12/utils": "1.0.0"
+  }
+}
+```
+
+That means we can import our local package just like any other dependency inside
+the app.
+
+```javascript showLineNumbers title="monorepo/packages/app1/src/index.js"
+import { something } from "@frago12/utils"
+...
+```
+
+<Highlight>
+  npm will try to resolve local pacakges first. If the package is not found it
+  will try to resolve them from the npm registry. Some versions of npm could
+  have a buggy behavior related to this. See the [found issues](#found-issues).
+</Highlight>
+
+## Execute npm commands
+
+One of the main advantages of having a monorepo is that you can execute npm
+commands in multiple workspaces simultaneously, for example, upgrading the
+version of an npm dependency in all workspaces:
+
+```bash title="Terminal"
+npm install react@18 -ws
+```
+
+Or only in specific workspaces:
+
+```bash title="Terminal"
+npm install react@18 -w @frago12/app1 -w @frago12/app2
+```
+
+The same strategy works for executing npm commands:
+
+```bash title="Terminal"
+npm run build -ws --if-present
+```
+
+Notice the `—if-present` flag. It will execute the `build` command in all
+workspaces where that script exists.
+
+## Found issues
+
+While working with npm workspaces, I found an issue with specific versions of
+npm where it no longer resolves the local packages first. Fortunately, npm@8.5
+fixes the problem. See
+[BUG ^7.20.3 no longer resolves local package first on install (workspaces) · Issue #3637 · npm/cli · GitHub](https://github.com/npm/cli/issues/3637)

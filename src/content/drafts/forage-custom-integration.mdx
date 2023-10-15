@@ -1,0 +1,78 @@
+---
+title: Custom Forage integration
+description: Follow this guide to build a Custom Forage integration.
+pubDate: 2023-10-02
+---
+
+import Columns from "../../components/Columns.astro";
+
+This step-by-step guide will walk you through the process to accept both SNAP
+and Cash EBT payments using a "Custom Checkout" integration type. In broad
+strokes, you need to make a few setup API requests and then redirect to Forage
+Checkout for balance check and final payment capture. The guide assumes that you
+have already received USDA approval to accept EBT payments. Furthermore, your
+application should already be registered with Forage's OAuth flow, which allows
+you to generate authentication tokens.
+
+## 1. Create an EBT payment method
+
+<Columns>
+<div slot="left">Be sure to use the request body for EBT cards.</div>
+<div slot="right">
+  ```shell title="POST /payment_methods"
+  curl --request POST \
+      --url https://api.joinforage.app/api/payment_methods/ \
+      --header 'accept: application/json' \
+      --header 'content-type: application/json' \
+      --data '
+  {
+    "type": "ebt",
+    "reusable": true,
+    "card": {
+      "number": "1234567890123456",
+    }
+  }
+  '
+  ```
+</div>
+</Columns>
+
+<Columns>
+<div slot="left">
+  Keep track of the ref field in the response. You will use this ref to include the EBT card in future requests, without transmitting the card number.
+</div>
+<div slot="right">
+  ```json showLineNumbers title="Response"
+  {
+    "ref": "e866cc156c",
+    "type": "ebt",
+    "reusable": true,
+    "card": {
+      "last_4": "5455",
+      "created": "2023-10-02T11:39:53.703996-07:00",
+      "token": "tok_sandbox_xfy3yzShLFyagv477GKpm1,",
+      "state": null
+    },
+    "balance": null,
+    "customer_id": null
+  }
+  ```
+</div>
+</Columns>
+
+## 2. Create Balance Check Session
+
+<Columns>
+  <div slot="left">
+    Note that you will pass the payment method ref from step 1 in this request body. You are requesting a balance check for this card.
+  </div>
+
+  <div slot="right">
+    ```shell title="POST /balance_sessions"
+    curl --request POST \
+     --url https://api.joinforage.app/api/balance_sessions/ \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json'
+    ```
+  </div>
+</Columns>

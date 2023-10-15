@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Base.astro";
+
+const workingExperience = [
+  {
+    id: 1,
+    title: "Software engineer",
+    company: "Softtek (GE)",
+    date: "June 2012",
+  },
+  {
+    id: 2,
+    title: "Team lead / Software engineer",
+    company: "Unosquare",
+    // company: "Unosquare (RealNetworks, GTS, Bigtincan, Gaia)",
+    date: "September 2014",
+  },
+  {
+    id: 3,
+    title: "Senior frontend engineer",
+    company: "EnterpriseDB",
+    date: "April 2021",
+  },
+  {
+    id: 4,
+    title: "Senior software engineer",
+    company: "Dequency",
+    date: "June 2022",
+  },
+  {
+    id: 5,
+    title: "Senior software engineer",
+    company: "Forage",
+    date: "September 2023",
+  },
+];
+
+const externalProject = [
+  { id: 11, title: "Consultant", company: "michelada.io", date: "" },
+  { id: 22, title: "Consultant", company: "JoinRoost", date: "" },
+];
+---
+
+<Layout>
+  <div class="mb-20">
+    <p class="max-w-xl text-xl">
+      I'm Francisco González, a fullstack developer and technology enthusiast —
+      I have worked with multinational companies as well as startups, helping
+      them to improve their existing products and/or create new ones from
+      scratch.
+    </p>
+  </div>
+
+  <h2 class="mb-6 mt-10 text-base font-bold uppercase">Working experience</h2>
+  <ul>
+    {
+      workingExperience.reverse().map((exp) => (
+        <li class="flex items-center justify-between border-b px-14 py-10 first:border-t">
+          <h3 class="text-4xl">{exp.company}</h3>{" "}
+          <span class="text-lg text-gray-500">{exp.title}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 class="mb-6 mt-20 text-base font-bold uppercase">External projects</h2>
+  <ul>
+    {
+      externalProject.reverse().map((exp) => (
+        <li class="flex items-center justify-between border-b px-14 py-10 first:border-t">
+          <h3 class="text-4xl">{exp.company}</h3>{" "}
+          <span class="text-lg text-gray-500">{exp.title}</span>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

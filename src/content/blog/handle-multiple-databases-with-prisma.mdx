@@ -1,0 +1,75 @@
+---
+title: Handle multiple databases with Prisma
+pubDate: 2023-02-13
+description:
+  We can use the Prisma ORM to access multiple database in the same project.
+  Here we will see how to do it.
+---
+
+We can use the Prisma ORM to access multiple database in the same project. Here
+we will see how to do it.
+
+## 1. Create a new Prisma file
+
+Make a new folder where the `schema.prisma` file will live. It can be created
+using the Prisma init command.
+
+```bash title="Terminal"
+prisma init
+```
+
+This will create the Prisma schema file inside a `prisma/` directory. You can
+also make the Prisma schema manually if you want to have a different folder
+structure.
+
+**Note:** If you want to pull the state of a database to the new `schema.prisma`
+file, you have to specify the path to that prisma file.
+
+```bash title="Terminal"
+prisma db pull --schema ./path/to/schema.prisma
+```
+
+## 2. Specify where the Prisma client of the second database will be generated
+
+By default, when a Prisma client is generated, Prisma creates a `.prisma/`
+folder inside the `node_modules/`. And this client is invoked by the
+`@prisma/client` package.
+
+To access the second database through Prisma, we need to generate the Prisma
+client in a directory different than the default one. To do this, add an
+`output` property in the `generate` section of the Prisma schema file to specify
+where the Prisma client for this schema wil be generated.
+
+```js title="~/second-db/prisma/schema.prisma"
+generator client {
+	provider = "prisma-client-js"
+	output = "../../node_modules/@prisma-second-db"
+}
+```
+
+## 3. Generate the Prisma client
+
+Now we need to generate the Prisma client, make sure to specify the path to the
+Prisma schema file, otherwise, Prisma will generate the client of the default
+database.
+
+```bash title="Terminal"
+prisma generate --schema ./path/to/schema.prisma
+```
+
+**Note:** You can also generate and apply database migrations to the second
+database.
+
+```bash title="Terminal"
+prisma migrate dev --schema ./path/to/schema.prisma
+```
+
+## 4. Import the Prisma client from the specified output folder
+
+Finally, we can import the Prisma client directly from the folder where we
+generated it. In this example, the Prisma client was generated inside the
+`node_modules/`, so we can just import it from there:
+
+```js title="app.js"
+import { PrismaClient } from "@prisma-second-db";
+```
