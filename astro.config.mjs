@@ -2,9 +2,8 @@ import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import rehypePrettyCode from "rehype-pretty-code";
-
 import tailwind from "@astrojs/tailwind";
-
+import vercel from "@astrojs/vercel/serverless";
 const rehypePrettyCodeOptions = {
   theme: "material-theme-lighter",
 };
@@ -27,4 +26,10 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
   },
+  output: "server",
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
 });
