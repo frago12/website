@@ -19,7 +19,9 @@ export default defineConfig({
     mdx({
       rehypePlugins: [[rehypePrettyCode, rehypePrettyCodeOptions]],
     }),
-    sitemap(),
+    sitemap({
+      filter: (page) => page.search(/\/drafts\//g) === -1,
+    }),
     tailwind(),
   ],
   markdown: {
