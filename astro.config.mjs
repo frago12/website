@@ -12,6 +12,9 @@ const rehypePrettyCodeOptions = {
 // https://astro.build/config
 export default defineConfig({
   site: "https://frago.dev",
+  redirects: {
+    "/blog": "/",
+  },
   integrations: [
     mdx({
       rehypePlugins: [[rehypePrettyCode, rehypePrettyCodeOptions]],
