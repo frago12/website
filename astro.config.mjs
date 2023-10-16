@@ -3,7 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import rehypePrettyCode from "rehype-pretty-code";
 import tailwind from "@astrojs/tailwind";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel/static";
 const rehypePrettyCodeOptions = {
   theme: "material-theme-lighter",
 };
@@ -26,7 +26,7 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
   },
-  output: "server",
+  output: "static",
   adapter: vercel({
     webAnalytics: {
       enabled: true,
